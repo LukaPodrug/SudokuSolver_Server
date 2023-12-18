@@ -22,6 +22,10 @@ app.use('/user', userRoute)
 app.use('/sudoku', sudokuRoute)
 app.use('/attempt', attemptRoute)
 
+app.get('/', (req, res) => {
+    res.status(200).send('App recieved get request')
+})
+
 app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
+    console.log(`App listening on port ${port}`)
 })
