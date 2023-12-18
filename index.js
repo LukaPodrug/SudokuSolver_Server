@@ -27,16 +27,6 @@ app.get('/', (req, res) => {
     res.status(200).send('App recieved get request')
 })
 
-app.get('/files', (req, res) => {
-    fs.readdir('./', (err, files) => {
-        files.forEach(file => {
-            console.log(file);
-        })
-    })
-
-    res.status(200).send('App recieved get reuqest on files')
-})
-
 app.listen(port, () => {
     console.log(`App listening on port ${port}`)
 })
