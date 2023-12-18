@@ -125,7 +125,7 @@ router.get('/userData', async(req, res) => {
         return
     }
 
-    const getUserByIdSchemaValidationResult = await getUserByIdSchema.validateAsync(req.query)
+    const getUserByIdSchemaValidationResult = getUserByIdSchema.validate(req.query)
 
     if(getUserByIdSchemaValidationResult.error) {
         res.status(400).send('Faulty get user by id data')
@@ -226,7 +226,7 @@ router.patch('/', async(req, res) => {
         return
     }
 
-    const editUserSchemaValidationResult = await editUserSchema.validateAsync(req.body)
+    const editUserSchemaValidationResult = editUserSchema.validate(req.body)
 
     if(editUserSchemaValidationResult.error) {
         res.status(400).send('Faulty edit user data')

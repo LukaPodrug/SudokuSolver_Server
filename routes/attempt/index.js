@@ -49,7 +49,7 @@ router.post('/', async(req, res) => {
         return
     }
 
-    const newAttemptSchemaValidationResult = await newAttemptSchema.validateAsync(req.body)
+    const newAttemptSchemaValidationResult = newAttemptSchema.validate(req.body)
 
     if(newAttemptSchemaValidationResult.error) {
         res.status(400).send('Faulty new attempt data')

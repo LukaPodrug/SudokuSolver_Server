@@ -51,7 +51,7 @@ router.post('/uploadImage', async (req, res) => {
         return
     }
 
-    const uploadImageSchemaValidationResult = await uploadImageSchema.validateAsync(req.body)
+    const uploadImageSchemaValidationResult = uploadImageSchema.validate(req.body)
 
     if(uploadImageSchemaValidationResult.error) {
         res.status(400).send('Faulty upload image data')
@@ -185,7 +185,7 @@ router.post('/uploadPuzzle', async (req, res) => {
         return
     }
 
-    const newPuzzleSchemaValidationResult = await newPuzzleSchema.validateAsync(req.body)
+    const newPuzzleSchemaValidationResult = newPuzzleSchema.validate(req.body)
 
     if(newPuzzleSchemaValidationResult.error) {
         res.status(400).send('Faulty new puzzle data')
@@ -420,7 +420,7 @@ router.post('/solveStepByStep', async(req, res) => {
         return
     }
 
-    const solvePuzzleStepByStepSchemaValidationResult = await solvePuzzleStepByStepSchema.validateAsync(req.body)
+    const solvePuzzleStepByStepSchemaValidationResult = solvePuzzleStepByStepSchema.validate(req.body)
 
     if(solvePuzzleStepByStepSchemaValidationResult.error) {
         res.status(400).send('Faulty solve puzzle step by step data')

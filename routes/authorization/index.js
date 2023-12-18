@@ -9,7 +9,7 @@ const { registrationSchema, loginSchema } = require('../../database/schemas')
 const router = express.Router()
 
 router.post('/registration', async (req, res) => {
-    const registrationSchemaValidationResult = await registrationSchema.validateAsync(req.body)
+    const registrationSchemaValidationResult = registrationSchema.validate(req.body)
 
     if(registrationSchemaValidationResult.error) {
         res.status(400).send('Faulty registration data')
@@ -114,7 +114,7 @@ router.post('/registration', async (req, res) => {
 })
 
 router.post('/login', async (req, res) => {
-    const loginSchemaValidationResult = await loginSchema.validateAsync(req.body)
+    const loginSchemaValidationResult = loginSchema.validate(req.body)
 
     if(loginSchemaValidationResult.error) {
         res.status(400).send('Faulty login data')
