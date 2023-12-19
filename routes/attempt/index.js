@@ -90,17 +90,28 @@ router.post('/', async(req, res) => {
         }
     }
 
-    const [validAttemptByUserIdAndPuzzleId, messageAttemptByUserIdAndPuzzleId, attemptByUserIdAndPuzzleId] = await databaseController.getAttemptsByUserIdAndPuzzleId(tokenData.id, req.body.puzzleId)
+    const [validAttemptsByUserIdAndPuzzleId, messageAttemptsByUserIdAndPuzzleId, attemptsByUserIdAndPuzzleId] = await databaseController.getAttemptsByUserIdAndPuzzleId(tokenData.id, req.body.puzzleId)
 
-    console.log(messageAttemptByUserIdAndPuzzleId)
+    console.log(messageAttemptsByUserIdAndPuzzleId)
 
-    if(!validAttemptByUserIdAndPuzzleId) {
+    if(!validAttemptsByUserIdAndPuzzleId) {
         res.status(500).send('Error with getting attempt by user id and puzzle id')
         return
     }
 
-    if(attemptByUserIdAndPuzzleId.completion) {
-        res.status(400).send('User already solved puzzle')
+    var userSolved = false
+
+    if(attemptsByUserIdAndPuzzleId) {
+        attemptsByUserIdAndPuzzleId.forEach(attempt => {
+            if(attempt.completion) {
+                userSolved = true
+                res.status(400).send('User already solved puzzle')
+                return
+            }
+        })
+    }
+
+    if(userSolved) {
         return
     }
 
@@ -108,7 +119,7 @@ router.post('/', async(req, res) => {
 
     if(req.body.completion) {
         if(!puzzleById.recordTime || req.body.time < puzzleById.recordTime) {
-            if(!attemptByUserIdAndPuzzleId) {
+            if(!attemptsByUserIdAndPuzzleId) {
                 const [validEditPuzzleRecord, messageEditPuzzleRecord] = await databaseController.editPuzzleRecord(req.body.puzzleId, tokenData.id, req.body.time, attemptDate)
 
                 console.log(messageEditPuzzleRecord)
