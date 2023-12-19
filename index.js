@@ -81,7 +81,7 @@ app.get('/version', async (req, res) => {
 })
 
 app.get('/versionplusplus', (req, res) => {
-    exec('strings /usr/lib/libstdc++.so.6 | grep LIBCXX', (error, stdout, stderr) => {
+    exec('strings /usr/lib/x86_64-linux-gnu/libstdc++.so.6 | grep LIBCXX', (error, stdout, stderr) => {
         if(error) {
             console.log(`error: ${error.message}`)
             res.status(500).send(error.message)
