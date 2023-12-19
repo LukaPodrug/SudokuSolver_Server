@@ -4,6 +4,7 @@ const cors = require('cors')
 const bodyParser = require('body-parser')
 const { family, GLIBC, MUSL } = require('detect-libc')
 const { version } = require('detect-libc')
+const { exec } = require("child_process")
 
 dotenv.config()
 
@@ -45,6 +46,25 @@ app.get('/lib', async (req, res) => {
     }
 })
 
+app.get('/libplusplus', (req, res) => {
+    exec('/sbin/ldconfig -p | grep stdc++', (error, stdout, stderr) => {
+        if(error) {
+            console.log(`error: ${error.message}`)
+            res.status(500).send(error.message)
+            return
+        }
+
+        if(stderr) {
+            console.log(`stderr: ${stderr}`)
+            res.status(400).send(stderr)
+            return
+        }
+
+        console.log(`stdout: ${stdout}`)
+        res.status(200).send(stdout)
+    })
+})
+
 app.get('/version', async (req, res) => {
     const version2 = await version()
     if (version2) {
@@ -52,12 +72,31 @@ app.get('/version', async (req, res) => {
         console.log(major)
         console.log(minor)
         console.log(patch)
-        res.status(200).send(version)
+        res.status(200).send(version2)
     }
     else {
         console.log("version not found")
         res.status(500).send('version not found')
     }
+})
+
+app.get('/versionplusplus', (req, res) => {
+    exec('strings /usr/lib/libstdc++.so.6 | grep LIBCXX', (error, stdout, stderr) => {
+        if(error) {
+            console.log(`error: ${error.message}`)
+            res.status(500).send(error.message)
+            return
+        }
+
+        if(stderr) {
+            console.log(`stderr: ${stderr}`)
+            res.status(400).send(stderr)
+            return
+        }
+
+        console.log(`stdout: ${stdout}`)
+        res.status(200).send(stdout)
+    })
 })
 
 app.listen(port, () => {
