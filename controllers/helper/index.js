@@ -1,5 +1,6 @@
 const fs = require('fs')
 const crypto = require('crypto')
+const path = require('path')
 
 const execFile = require('child_process').execFile
 
@@ -42,7 +43,8 @@ function createImageName(base64Image) {
 }
 
 function saveImage(imageName, imageFormat, base64Image) {
-    fs.writeFile(`./images/${imageName}.${imageFormat}`, base64Image, {encoding: 'base64'}, function(error) {
+    const imagePath = path.resolve(__dirname, '..', '..', 'images', `${imageName}.${imageFormat}`)
+    fs.writeFile(imagePath, base64Image, {encoding: 'base64'}, function(error) {
         if(error) {
             return [false, error]
         }
@@ -52,8 +54,9 @@ function saveImage(imageName, imageFormat, base64Image) {
 }
 
 function executeGrabber(imageName, imageFormat) {
+    const grabberPath = path.resolve(__dirname, '..', '..', 'sudokuGrabber')
     return new Promise(resolve => {
-        execFile('./sudokuGrabber', [`${imageName}.${imageFormat}`], function(error, data) {
+        execFile(grabberPath, [`${imageName}.${imageFormat}`], function(error, data) {
             if(error && data) {
                 resolve([false, error, data])
             }
@@ -68,7 +71,8 @@ function executeGrabber(imageName, imageFormat) {
 }
 
 function deleteImage(imageName, imageFormat) {
-    fs.unlink(`./images/${imageName}.${imageFormat}`, function(error) {
+    const imagePath = path.resolve(__dirname, '..', '..', 'images', `${imageName}.${imageFormat}`)
+    fs.unlink(imagePath, function(error) {
         if(error) {
             return [false, error]
         }
@@ -78,8 +82,9 @@ function deleteImage(imageName, imageFormat) {
 }
 
 function executeHelperUploadPuzzle(puzzleString) {
+    const helperPath = path.resolve(__dirname, '..', '..', 'sudokuHelper')
     return new Promise(resolve => {
-        execFile('./sudokuHelper', [1, `${puzzleString}`], function(error, data) {
+        execFile(helperPath, [1, `${puzzleString}`], function(error, data) {
             if(error && data) {
                 resolve([false, error, data])
             }
@@ -94,8 +99,9 @@ function executeHelperUploadPuzzle(puzzleString) {
 }
 
 function executeHelperSolveStepByStep(puzzleString, userString, solutionString) {
+    const helperPath = path.resolve(__dirname, '..', '..', 'sudokuHelper')
     return new Promise(resolve => {
-        execFile('./sudokuHelper', [2, `${puzzleString}`, `${userString}`, `${solutionString}`], function(error, data) {
+        execFile(helperPath, [2, `${puzzleString}`, `${userString}`, `${solutionString}`], function(error, data) {
             if(error && data) {
                 resolve([false, error, data])
             }
