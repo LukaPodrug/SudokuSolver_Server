@@ -21,6 +21,7 @@ int main(int argc, char** argv) {
     Mat image;
 
     imageName = argv[1];
+
     imagePath = "./images/" + imageName;
 
     image = imread(imagePath);
@@ -31,50 +32,71 @@ int main(int argc, char** argv) {
         return -1; 
     }
 
-    //preproccessing image using threshold variable
-    Mat proccessedImage;
-    bool valid;
+    //vector of found grids
+    vector<tuple<String, int>> gridValues;
 
-    /*for(int thresholdMin = 50; thresholdMin < 200; thresholdMin++) {
+    for(int thresholdMin = 100; thresholdMin <= 150; thresholdMin++) {
+        //preproccessing image using threshold variable
+        Mat proccessedImage;
+        bool valid;
+
         proccessedImage = imagePreproccessing(image, thresholdMin);
 
         //finding sudoku grid in image
         tie(valid, proccessedImage) = findGrid(proccessedImage);
 
         if(valid == true) {
-            break;
+            //get cells from grid
+            vector<tuple<Mat, tuple<int, int>>> cells;
+
+            cells = findCells(proccessedImage);
+
+            //get cell values and positions
+            vector<tuple<int, tuple<int, int>>> cellValuesPositions;
+
+            cellValuesPositions = findCellValues(cells);
+            cellValuesPositions = findCellPositions(cellValuesPositions);
+
+            //print sudoku grid for server to read
+            string gridString = "";
+
+            for(int index = 0; index < 81; index++) {
+                gridString = gridString + to_string(get<0>(cellValuesPositions[index]));
+            }
+
+            //make grid tuple to push in grid vector
+            tuple<String, int> gridTuple;
+            int gridOccurance = 1;
+
+            for(int index = 0; index < gridValues.size(); index++) {
+                if(get<0>(gridValues[index]) == gridString) {
+                    gridOccurance = get<1>(gridValues[index]);
+                    gridValues.pop_back();
+                    break;
+                }
+            }
+
+            gridTuple = make_tuple(gridString, gridOccurance);
+
+            gridValues.push_back(gridTuple);
         }
-    }*/
+    }
 
-    proccessedImage = imagePreproccessing(image, 0);
-
-    tie(valid, proccessedImage) = findGrid(proccessedImage);
-
-    //check if grid exists in image
-    if(valid == false) {
-        cout << "Grid not found on image" << endl;
+    if(gridValues.size() == 0) {
+        cout << "Grid not found" << endl;
         return -1;
     }
 
-    //get cells from grid
-    vector<tuple<Mat, tuple<int, int>>> cells;
+    //occurance record grid index
+    int recordIndex = gridValues.size() - 1;
 
-    cells = findCells(proccessedImage);
-
-    //get cell values and positions
-    vector<tuple<int, tuple<int, int>>> cellValuesPositions;
-
-    cellValuesPositions = findCellValues(cells);
-    cellValuesPositions = findCellPositions(cellValuesPositions);
-
-    //print sudoku grid for server to read
-    string gridString = "";
-
-    for(int index = 0; index < 81; index++) {
-        gridString = gridString + to_string(get<0>(cellValuesPositions[index]));
+    for(int index = gridValues.size() - 2; index >= 0; index--) {
+        if(get<1>(gridValues[index]) > get<1>(gridValues[recordIndex])) {
+            recordIndex = index;
+        }
     }
 
-    cout << gridString << endl;
+    cout << get<0>(gridValues[recordIndex]) << endl;
 
     return 0;
 }
@@ -364,16 +386,16 @@ Mat imagePreproccessing(Mat image, int thresholdMin) {
     resize(image, image, Size(1100, 1100 * ratio));
 
     //blurring image
-    medianBlur(image, image, 3);
+    GaussianBlur(image, image, Size(9, 9), 0);
 
     //grayscaling image
     cvtColor(image, image, COLOR_BGR2GRAY);
 
     //converting image to black-white
-    //threshold(image, image, thresholdMin, 255, THRESH_BINARY);
+    threshold(image, image, thresholdMin, 255, THRESH_BINARY);
 
     //adaptive threshold
-    adaptiveThreshold(image, image, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY, 11, 3);
+    adaptiveThreshold(image, image, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY, 11, 2);
 
     //add padding to image
     copyMakeBorder(image, image, 50, 50, 50, 50, BORDER_CONSTANT, 255);
