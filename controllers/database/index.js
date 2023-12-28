@@ -33,7 +33,8 @@ async function createUsersTable() {
                 "nationality" varchar,
                 "dateOfBirth" date,
                 "password" varchar NOT NULL,
-                "active" bool NOT NULL
+                "active" bool NOT NULL,
+                "points" integer NOT NULL
             )
         `
 
@@ -66,8 +67,8 @@ async function getUserByEmail(email) {
 async function createNewUser(firstName, lastName, username, email, nationality, dateOfBirth, passwordHash) {
     try {
         const response = await sql`
-            INSERT INTO "users"("firstName", "lastName", "username", "email", "nationality", "dateOfBirth", "password")
-            VALUES(${firstName}, ${lastName}, ${username}, ${email}, ${nationality}, ${dateOfBirth}, ${passwordHash})
+            INSERT INTO "users"("firstName", "lastName", "username", "email", "nationality", "dateOfBirth", "password", "active", "points")
+            VALUES(${firstName}, ${lastName}, ${username}, ${email}, ${nationality}, ${dateOfBirth}, ${passwordHash}, ${true}, ${0})
             RETURNING id
         `
 
@@ -163,6 +164,21 @@ async function getUserRecords(id) {
     }
     catch(error) {
         return [false, error, null]
+    }
+}
+
+async function editUserPoints(id, oldPoints, newPoints) {
+    try {
+        await sql`
+            UPDATE "users"
+            SET "points" = ${oldPoints + newPoints}
+            WHERE "id" = ${id}
+        `
+
+        return [true, 'User points successfully edited']
+    }
+    catch(error) {
+        return [false, error]
     }
 }
 
@@ -328,11 +344,7 @@ async function getAttemptsByUserIdAndPuzzleId(userId, puzzleId) {
             WHERE "userId" = ${userId} AND "puzzleId" = ${puzzleId}
         `
 
-        if(response.length === 0) {
-            return [true, 'Attempt with entered user id and puzzle id does not exist', null]
-        }
-
-        return [true, 'Attempt with entered user id and puzzle id found', response]
+        return [true, 'Attempts with entered user id and puzzle id found', response]
     }
     catch(error) {
         return [false, error, null]
@@ -350,10 +362,6 @@ async function getStatisticsByPuzzleIds(puzzleIds) {
             WHERE "puzzleId" = ANY(${puzzleIds})
             GROUP BY "puzzleId"
         `
-
-        if(response.length === 0) {
-            return [true, 'Puzzle statistics found', {successAttempts: 0, failureAttempts: 0}]
-        }
 
         return [true, 'Puzzle statistics found', response]
     }
@@ -413,6 +421,7 @@ module.exports = {
     getUserById,
     editUser,
     getUserRecords,
+    editUserPoints,
     createPuzzlesTable,
     getPuzzleByString,
     createNewPuzzle,

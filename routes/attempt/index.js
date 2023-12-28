@@ -30,6 +30,26 @@ router.post('/', async(req, res) => {
         return
     }
 
+    const [validUsersTableExistance, messageUsersTableExistance, usersTableExistance] = await databaseController.verifyTableExistance('users')
+
+    console.log(messageUsersTableExistance)
+
+    if(!validUsersTableExistance) {
+        res.status(500).send('Error with verifying users table existance')
+        return
+    }
+
+    if(!usersTableExistance) {
+        const [validCreateUsersTable, messageCreateUsersTable] = await databaseController.createUsersTable()
+
+        console.log(messageCreateUsersTable)
+
+        if(!validCreateUsersTable) {
+            res.status(500).send('Error with creating users table')
+            return
+        }
+    }
+
     const [validUserById, messageUserById, userById] = await databaseController.getUserById(tokenData.id)
 
     console.log(messageUserById)
@@ -54,6 +74,26 @@ router.post('/', async(req, res) => {
     if(newAttemptSchemaValidationResult.error) {
         res.status(400).send('Faulty new attempt data')
         return
+    }
+
+    const [validPuzzlesTableExistance, messagePuzzlesTableExistance, puzzlesTableExistance] = await databaseController.verifyTableExistance('puzzles')
+
+    console.log(messagePuzzlesTableExistance)
+
+    if(!validPuzzlesTableExistance) {
+        res.status(500).send('Error with verifying puzzles table existance')
+        return
+    }
+
+    if(!puzzlesTableExistance) {
+        const [validCreatePuzzlesTable, messageCreatePuzzlesTable] = await databaseController.createPuzzlesTable()
+
+        console.log(messageCreatePuzzlesTable)
+
+        if(!validCreatePuzzlesTable) {
+            res.status(500).send('Error with creating puzzles table')
+            return
+        }
     }
 
     const [validPuzzleById, messagePuzzleById, puzzleById] = await databaseController.getPuzzleById(req.body.puzzleId)
@@ -90,36 +130,29 @@ router.post('/', async(req, res) => {
         }
     }
 
-    const [validAttemptsByUserIdAndPuzzleId, messageAttemptsByUserIdAndPuzzleId, attemptsByUserIdAndPuzzleId] = await databaseController.getAttemptsByUserIdAndPuzzleId(tokenData.id, req.body.puzzleId)
-
-    console.log(messageAttemptsByUserIdAndPuzzleId)
-
-    if(!validAttemptsByUserIdAndPuzzleId) {
-        res.status(500).send('Error with getting attempt by user id and puzzle id')
-        return
-    }
-
-    var userSolved = false
-
-    if(attemptsByUserIdAndPuzzleId) {
-        attemptsByUserIdAndPuzzleId.forEach(attempt => {
-            if(attempt.completion) {
-                userSolved = true
-                res.status(400).send('User already solved puzzle')
-                return
-            }
-        })
-    }
-
-    if(userSolved) {
-        return
-    }
-
     const attemptDate = dateConverter(new Date()).format("YYYY-MM-DD")
 
-    if(req.body.completion) {
-        if(!puzzleById.recordTime || req.body.time < puzzleById.recordTime) {
-            if(!attemptsByUserIdAndPuzzleId) {
+    if(puzzleById.creationUserId !== tokenData.id) {
+        const [validEditUserPoints, messageEditUserPoints] = await databaseController.editUserPoints(tokenData.id, userById.points, req.body.completion ? puzzleById.difficulty : -puzzleById.difficulty)
+
+        console.log(messageEditUserPoints)
+
+        if(!validEditUserPoints) {
+            res.status(500).send('Error with editing user points')
+            return
+        }
+
+        const [validAttemptsByUserIdAndPuzzleId, messageAttemptsByUserIdAndPuzzleId, attemptsByUserIdAndPuzzleId] = await databaseController.getAttemptsByUserIdAndPuzzleId(tokenData.id, req.body.puzzleId)
+
+        console.log(messageAttemptsByUserIdAndPuzzleId)
+    
+        if(!validAttemptsByUserIdAndPuzzleId) {
+            res.status(500).send('Error with getting attempt by user id and puzzle id')
+            return
+        }
+
+        if(req.body.completion && attemptsByUserIdAndPuzzleId.length === 0) {
+            if(!puzzleById.recordTime || req.body.time < puzzleById.recordTime) {
                 const [validEditPuzzleRecord, messageEditPuzzleRecord] = await databaseController.editPuzzleRecord(req.body.puzzleId, tokenData.id, req.body.time, attemptDate)
 
                 console.log(messageEditPuzzleRecord)

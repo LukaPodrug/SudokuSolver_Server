@@ -31,6 +31,26 @@ router.get('/ownData', async(req, res) => {
         return
     }
 
+    const [validUsersTableExistance, messageUsersTableExistance, usersTableExistance] = await databaseController.verifyTableExistance('users')
+
+    console.log(messageUsersTableExistance)
+
+    if(!validUsersTableExistance) {
+        res.status(500).send('Error with verifying users table existance')
+        return
+    }
+
+    if(!usersTableExistance) {
+        const [validCreateUsersTable, messageCreateUsersTable] = await databaseController.createUsersTable()
+
+        console.log(messageCreateUsersTable)
+
+        if(!validCreateUsersTable) {
+            res.status(500).send('Error with creating users table')
+            return
+        }
+    }
+
     const [validUserById, messageUserById, userById] = await databaseController.getUserById(tokenData.id)
 
     console.log(messageUserById)
@@ -58,6 +78,26 @@ router.get('/ownData', async(req, res) => {
         userById.dateOfBirth = dateConverter(new Date(userById.dateOfBirth)).format("YYYY-MM-DD")
     }
 
+    const [validAttemptsTableExistance, messageAttemptsTableExistance, attemptsTableExistance] = await databaseController.verifyTableExistance('attempts')
+
+    console.log(messageAttemptsTableExistance)
+
+    if(!validAttemptsTableExistance) {
+        res.status(500).send('Error with verifying attempts table existance')
+        return
+    }
+
+    if(!attemptsTableExistance) {
+        const [validCreateAttemptsTable, messageCreateAttemptsTable] = await databaseController.createAttemptsTable()
+
+        console.log(messageCreateAttemptsTable)
+
+        if(!validCreateAttemptsTable) {
+            res.status(500).send('Error with creating attempts table')
+            return
+        }
+    }
+
     const [validUserStatistics, messageUserStatistics, userStatistics] = await databaseController.getStatisticsByUserId(tokenData.id)
 
     console.log(messageUserStatistics)
@@ -69,6 +109,26 @@ router.get('/ownData', async(req, res) => {
 
     userById.successAttempts = userStatistics.successAttempts
     userById.failureAttempts = userStatistics.failureAttempts
+
+    const [validPuzzlesTableExistance, messagePuzzlesTableExistance, puzzlesTableExistance] = await databaseController.verifyTableExistance('puzzles')
+
+    console.log(messagePuzzlesTableExistance)
+
+    if(!validPuzzlesTableExistance) {
+        res.status(500).send('Error with verifying puzzles table existance')
+        return
+    }
+
+    if(!puzzlesTableExistance) {
+        const [validCreatePuzzlesTable, messageCreatePuzzlesTable] = await databaseController.createPuzzlesTable()
+
+        console.log(messageCreatePuzzlesTable)
+
+        if(!validCreatePuzzlesTable) {
+            res.status(500).send('Error with creating puzzles table')
+            return
+        }
+    }
 
     const [validUserRecords, messageUserRecords, userRecords] = await databaseController.getUserRecords(tokenData.id)
 
@@ -104,6 +164,26 @@ router.get('/userData', async(req, res) => {
     if(!tokenVerification) {
         res.status(400).send('Invalid token')
         return
+    }
+
+    const [validUsersTableExistance, messageUsersTableExistance, usersTableExistance] = await databaseController.verifyTableExistance('users')
+
+    console.log(messageUsersTableExistance)
+
+    if(!validUsersTableExistance) {
+        res.status(500).send('Error with verifying users table existance')
+        return
+    }
+
+    if(!usersTableExistance) {
+        const [validCreateUsersTable, messageCreateUsersTable] = await databaseController.createUsersTable()
+
+        console.log(messageCreateUsersTable)
+
+        if(!validCreateUsersTable) {
+            res.status(500).send('Error with creating users table')
+            return
+        }
     }
 
     const [validUserById1, messageUserById1, userById1] = await databaseController.getUserById(tokenData.id)
@@ -159,6 +239,26 @@ router.get('/userData', async(req, res) => {
         userById2.dateOfBirth = dateConverter(new Date(userById2.dateOfBirth)).format("YYYY-MM-DD")
     }
 
+    const [validAttemptsTableExistance, messageAttemptsTableExistance, attemptsTableExistance] = await databaseController.verifyTableExistance('attempts')
+
+    console.log(messageAttemptsTableExistance)
+
+    if(!validAttemptsTableExistance) {
+        res.status(500).send('Error with verifying attempts table existance')
+        return
+    }
+
+    if(!attemptsTableExistance) {
+        const [validCreateAttemptsTable, messageCreateAttemptsTable] = await databaseController.createAttemptsTable()
+
+        console.log(messageCreateAttemptsTable)
+
+        if(!validCreateAttemptsTable) {
+            res.status(500).send('Error with creating attempts table')
+            return
+        }
+    }
+
     const [validUserStatistics, messageUserStatistics, userStatistics] = await databaseController.getStatisticsByUserId(req.query.id)
 
     console.log(messageUserStatistics)
@@ -170,6 +270,26 @@ router.get('/userData', async(req, res) => {
 
     userById2.successAttempts = userStatistics.successAttempts
     userById2.failureAttempts = userStatistics.failureAttempts
+
+    const [validPuzzlesTableExistance, messagePuzzlesTableExistance, puzzlesTableExistance] = await databaseController.verifyTableExistance('puzzles')
+
+    console.log(messagePuzzlesTableExistance)
+
+    if(!validPuzzlesTableExistance) {
+        res.status(500).send('Error with verifying puzzles table existance')
+        return
+    }
+
+    if(!puzzlesTableExistance) {
+        const [validCreatePuzzlesTable, messageCreatePuzzlesTable] = await databaseController.createPuzzlesTable()
+
+        console.log(messageCreatePuzzlesTable)
+
+        if(!validCreatePuzzlesTable) {
+            res.status(500).send('Error with creating puzzles table')
+            return
+        }
+    }
 
     const [validUserRecords, messageUserRecords, userRecords] = await databaseController.getUserRecords(req.query.id)
 
@@ -205,6 +325,26 @@ router.patch('/', async(req, res) => {
     if(!tokenVerification) {
         res.status(400).send('Invalid token')
         return
+    }
+
+    const [validUsersTableExistance, messageUsersTableExistance, usersTableExistance] = await databaseController.verifyTableExistance('users')
+
+    console.log(messageUsersTableExistance)
+
+    if(!validUsersTableExistance) {
+        res.status(500).send('Error with verifying users table existance')
+        return
+    }
+
+    if(!usersTableExistance) {
+        const [validCreateUsersTable, messageCreateUsersTable] = await databaseController.createUsersTable()
+
+        console.log(messageCreateUsersTable)
+
+        if(!validCreateUsersTable) {
+            res.status(500).send('Error with creating users table')
+            return
+        }
     }
 
     const [validUserById, messageUserById, userById] = await databaseController.getUserById(tokenData.id)
@@ -260,6 +400,24 @@ router.patch('/', async(req, res) => {
         if(userByUsername) {
             res.status(400).send('User with entered username already exists')
             return
+        }
+    }
+
+    if(editUserData.email) {
+        if(userById.email !== editUserData.email) {
+            const [validUserByEmail, messageUserByEmail, userByEmail] = await databaseController.getUserByEmail(editUserData.email)
+
+            console.log(messageUserByEmail)
+
+            if(!validUserByEmail) {
+                res.status(500).send('Error with getting user by email')
+                return
+            }
+
+            if(userByEmail) {
+                res.status(400).send('User with entered email already exists')
+                return
+            }
         }
     }
 

@@ -8,9 +8,9 @@ function verifyRegistrationData(firstName, lastName, username, email, nationalit
         firstName: firstName,
         lastName: lastName,
         username: username,
-        email: email,
-        nationality: nationality,
-        dateOfBirth: dateOfBirth,
+        email: email.length === 0 ? null : email,
+        nationality: nationality.length === 0 ? null : nationality,
+        dateOfBirth: dateOfBirth.length === 0 ? null : dateOfBirth,
         passwordPlaintext: passwordPlaintext,
     }
 
@@ -82,9 +82,9 @@ function verifyEditUserData(id, firstName, lastName, username, email, nationalit
         firstName: firstName,
         lastName: lastName,
         username: username,
-        email: email,
-        nationality: nationality,
-        dateOfBirth: dateOfBirth,
+        email: email.length === 0 ? null : email,
+        nationality: nationality.length === 0 ? null : nationality,
+        dateOfBirth: dateOfBirth.length === 0 ? null : dateOfBirth,
         passwordPlaintext: passwordPlaintext,
     }
 

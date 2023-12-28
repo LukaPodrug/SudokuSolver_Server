@@ -32,6 +32,26 @@ router.post('/uploadImage', async (req, res) => {
         return
     }
 
+    const [validUsersTableExistance, messageUsersTableExistance, usersTableExistance] = await databaseController.verifyTableExistance('users')
+
+    console.log(messageUsersTableExistance)
+
+    if(!validUsersTableExistance) {
+        res.status(500).send('Error with verifying users table existance')
+        return
+    }
+
+    if(!usersTableExistance) {
+        const [validCreateUsersTable, messageCreateUsersTable] = await databaseController.createUsersTable()
+
+        console.log(messageCreateUsersTable)
+
+        if(!validCreateUsersTable) {
+            res.status(500).send('Error with creating users table')
+            return
+        }
+    }
+
     const [validUserById, messageUserById, userById] = await databaseController.getUserById(tokenData.id)
 
     console.log(messageUserById)
@@ -166,6 +186,26 @@ router.post('/uploadPuzzle', async (req, res) => {
         return
     }
 
+    const [validUsersTableExistance, messageUsersTableExistance, usersTableExistance] = await databaseController.verifyTableExistance('users')
+
+    console.log(messageUsersTableExistance)
+
+    if(!validUsersTableExistance) {
+        res.status(500).send('Error with verifying users table existance')
+        return
+    }
+
+    if(!usersTableExistance) {
+        const [validCreateUsersTable, messageCreateUsersTable] = await databaseController.createUsersTable()
+
+        console.log(messageCreateUsersTable)
+
+        if(!validCreateUsersTable) {
+            res.status(500).send('Error with creating users table')
+            return
+        }
+    }
+
     const [validUserById, messageUserById, userById] = await databaseController.getUserById(tokenData.id)
 
     console.log(messageUserById)
@@ -287,6 +327,26 @@ router.get('/', async(req, res) => {
         return
     }
 
+    const [validUsersTableExistance, messageUsersTableExistance, usersTableExistance] = await databaseController.verifyTableExistance('users')
+
+    console.log(messageUsersTableExistance)
+
+    if(!validUsersTableExistance) {
+        res.status(500).send('Error with verifying users table existance')
+        return
+    }
+
+    if(!usersTableExistance) {
+        const [validCreateUsersTable, messageCreateUsersTable] = await databaseController.createUsersTable()
+
+        console.log(messageCreateUsersTable)
+
+        if(!validCreateUsersTable) {
+            res.status(500).send('Error with creating users table')
+            return
+        }
+    }
+
     const [validUserById, messageUserById, userById] = await databaseController.getUserById(tokenData.id)
 
     console.log(messageUserById)
@@ -306,11 +366,31 @@ router.get('/', async(req, res) => {
         return
     }
 
-    const getPuzzlesByDifficultyAndPageSchemaValidationResult = await getPuzzlesByDifficultyAndPage.validateAsync(req.query)
+    const getPuzzlesByDifficultyAndPageSchemaValidationResult = getPuzzlesByDifficultyAndPage.validate(req.query)
 
     if(getPuzzlesByDifficultyAndPageSchemaValidationResult.error) {
         res.status(400).send('Faulty new puzzle data')
         return
+    }
+
+    const [validPuzzlesTableExistance, messagePuzzlesTableExistance, puzzlesTableExistance] = await databaseController.verifyTableExistance('puzzles')
+
+    console.log(messagePuzzlesTableExistance)
+
+    if(!validPuzzlesTableExistance) {
+        res.status(500).send('Error with verifying puzzles table existance')
+        return
+    }
+
+    if(!puzzlesTableExistance) {
+        const [validCreatePuzzlesTable, messageCreatePuzzlesTable] = await databaseController.createPuzzlesTable()
+
+        console.log(messageCreatePuzzlesTable)
+
+        if(!validCreatePuzzlesTable) {
+            res.status(500).send('Error with creating puzzles table')
+            return
+        }
     }
 
     const [validPuzzlesByDifficultyAndPage, messagePuzzlesByDifficultyAndPage, puzzlesByDifficultyAndPage] = await databaseController.getPuzzlesByDifficultyAndPage(req.query.difficulty, req.query.page)
@@ -339,6 +419,26 @@ router.get('/', async(req, res) => {
 
         puzzleIds.push(puzzle.id)
     })
+
+    const [validAttemptsTableExistance, messageAttemptsTableExistance, attemptsTableExistance] = await databaseController.verifyTableExistance('attempts')
+
+    console.log(messageAttemptsTableExistance)
+
+    if(!validAttemptsTableExistance) {
+        res.status(500).send('Error with verifying attempts table existance')
+        return
+    }
+
+    if(!attemptsTableExistance) {
+        const [validCreateAttemptsTable, messageCreateAttemptsTable] = await databaseController.createAttemptsTable()
+
+        console.log(messageCreateAttemptsTable)
+
+        if(!validCreateAttemptsTable) {
+            res.status(500).send('Error with creating attempts table')
+            return
+        }
+    }
 
     const [validStatisticsByPuzzleIds, messageStatisticsByPuzzleIds, statisticsByPuzzleIds] = await databaseController.getStatisticsByPuzzleIds(puzzleIds)
 
@@ -401,6 +501,26 @@ router.post('/solveStepByStep', async(req, res) => {
         return
     }
 
+    const [validUsersTableExistance, messageUsersTableExistance, usersTableExistance] = await databaseController.verifyTableExistance('users')
+
+    console.log(messageUsersTableExistance)
+
+    if(!validUsersTableExistance) {
+        res.status(500).send('Error with verifying users table existance')
+        return
+    }
+
+    if(!usersTableExistance) {
+        const [validCreateUsersTable, messageCreateUsersTable] = await databaseController.createUsersTable()
+
+        console.log(messageCreateUsersTable)
+
+        if(!validCreateUsersTable) {
+            res.status(500).send('Error with creating users table')
+            return
+        }
+    }
+
     const [validUserById, messageUserById, userById] = await databaseController.getUserById(tokenData.id)
 
     console.log(messageUserById)
@@ -425,6 +545,26 @@ router.post('/solveStepByStep', async(req, res) => {
     if(solvePuzzleStepByStepSchemaValidationResult.error) {
         res.status(400).send('Faulty solve puzzle step by step data')
         return
+    }
+
+    const [validPuzzlesTableExistance, messagePuzzlesTableExistance, puzzlesTableExistance] = await databaseController.verifyTableExistance('puzzles')
+
+    console.log(messagePuzzlesTableExistance)
+
+    if(!validPuzzlesTableExistance) {
+        res.status(500).send('Error with verifying puzzles table existance')
+        return
+    }
+
+    if(!puzzlesTableExistance) {
+        const [validCreatePuzzlesTable, messageCreatePuzzlesTable] = await databaseController.createPuzzlesTable()
+
+        console.log(messageCreatePuzzlesTable)
+
+        if(!validCreatePuzzlesTable) {
+            res.status(500).send('Error with creating puzzles table')
+            return
+        }
     }
 
     const [validPuzzleById, messagePuzzleById, puzzleById] = await databaseController.getPuzzleById(req.body.id)

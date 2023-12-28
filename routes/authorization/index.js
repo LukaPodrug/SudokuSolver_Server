@@ -121,6 +121,26 @@ router.post('/login', async (req, res) => {
         return
     }
 
+    const [validUsersTableExistance, messageUsersTableExistance, usersTableExistance] = await databaseController.verifyTableExistance('users')
+
+    console.log(messageUsersTableExistance)
+
+    if(!validUsersTableExistance) {
+        res.status(500).send('Error with verifying users table existance')
+        return
+    }
+
+    if(!usersTableExistance) {
+        const [validCreateUsersTable, messageCreateUsersTable] = await databaseController.createUsersTable()
+
+        console.log(messageCreateUsersTable)
+
+        if(!validCreateUsersTable) {
+            res.status(500).send('Error with creating users table')
+            return
+        }
+    }
+
     const [validUserByUsername, messageUserByUsername, userByUsername] = await databaseController.getUserByUsername(req.body.username)
 
     console.log(messageUserByUsername)
@@ -171,6 +191,70 @@ router.post('/login', async (req, res) => {
     res.status(200).send(token)
 })
 
+router.post('/verifyToken', async(req, res) => {
+    const token = req.get('Authorization')
+    
+    if(!token) {
+        res.status(400).send('Invalid token')
+        return
+    }
+
+    const [validTokenVerification, messageTokenVerification, tokenVerification, tokenData] = authorizationController.verifyToken(token)
+
+    console.log(messageTokenVerification)
+
+    if(!validTokenVerification) {
+        res.status(500).send('Error with verifying token')
+        return
+    }
+
+    if(!tokenVerification) {
+        res.status(400).send('Invalid token')
+        return
+    }
+
+    const [validUsersTableExistance, messageUsersTableExistance, usersTableExistance] = await databaseController.verifyTableExistance('users')
+
+    console.log(messageUsersTableExistance)
+
+    if(!validUsersTableExistance) {
+        res.status(500).send('Error with verifying users table existance')
+        return
+    }
+
+    if(!usersTableExistance) {
+        const [validCreateUsersTable, messageCreateUsersTable] = await databaseController.createUsersTable()
+
+        console.log(messageCreateUsersTable)
+
+        if(!validCreateUsersTable) {
+            res.status(500).send('Error with creating users table')
+            return
+        }
+    }
+
+    const [validUserById, messageUserById, userById] = await databaseController.getUserById(tokenData.id)
+
+    console.log(messageUserById)
+
+    if(!validUserById) {
+        res.status(500).send('Error with getting user by id')
+        return
+    }
+
+    if(!userById) {
+        res.status(400).send('User not found')
+        return
+    }
+
+    if(!userById.active) {
+        res.status(400).send('User not active')
+        return
+    }
+
+    res.status(200).send('Lawful token')
+})
+
 router.delete('/', async(req, res) => {
     const token = req.get('Authorization')
     
@@ -191,6 +275,26 @@ router.delete('/', async(req, res) => {
     if(!tokenVerification) {
         res.status(400).send('Invalid token')
         return
+    }
+
+    const [validUsersTableExistance, messageUsersTableExistance, usersTableExistance] = await databaseController.verifyTableExistance('users')
+
+    console.log(messageUsersTableExistance)
+
+    if(!validUsersTableExistance) {
+        res.status(500).send('Error with verifying users table existance')
+        return
+    }
+
+    if(!usersTableExistance) {
+        const [validCreateUsersTable, messageCreateUsersTable] = await databaseController.createUsersTable()
+
+        console.log(messageCreateUsersTable)
+
+        if(!validCreateUsersTable) {
+            res.status(500).send('Error with creating users table')
+            return
+        }
     }
 
     const [validUserById, messageUserById, userById] = await databaseController.getUserById(tokenData.id)
