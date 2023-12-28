@@ -35,7 +35,7 @@ int main(int argc, char** argv) {
     //vector of found grids
     vector<tuple<String, int>> gridValues;
 
-    for(int thresholdMin = 100; thresholdMin <= 150; thresholdMin++) {
+    for(int thresholdMin = 80; thresholdMin <= 170; thresholdMin++) {
         //preproccessing image using threshold variable
         Mat proccessedImage;
         bool valid;
@@ -386,7 +386,7 @@ Mat imagePreproccessing(Mat image, int thresholdMin) {
     resize(image, image, Size(1100, 1100 * ratio));
 
     //blurring image
-    GaussianBlur(image, image, Size(9, 9), 0);
+    GaussianBlur(image, image, Size(3, 3), 0);
 
     //grayscaling image
     cvtColor(image, image, COLOR_BGR2GRAY);
