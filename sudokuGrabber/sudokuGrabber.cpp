@@ -7,7 +7,7 @@ using namespace std;
 using namespace cv;
 using namespace tesseract;
 
-Mat imagePreproccessing(Mat image, int thresholdMin);
+Mat imagePreproccessing(Mat image);
 tuple<bool, Mat> findGrid(Mat image);
 Mat fourPointPerspective(Mat image, vector<Point> points);
 vector<Point2f> orderPointsOfQuadrilateral(vector<Point> points);
@@ -32,71 +32,39 @@ int main(int argc, char** argv) {
         return -1; 
     }
 
-    //vector of found grids
-    vector<tuple<String, int>> gridValues;
+    //preproccessing image using threshold variable
+    Mat proccessedImage;
+    bool valid;
 
-    for(int thresholdMin = 80; thresholdMin <= 170; thresholdMin++) {
-        //preproccessing image using threshold variable
-        Mat proccessedImage;
-        bool valid;
+    proccessedImage = imagePreproccessing(image);
 
-        proccessedImage = imagePreproccessing(image, thresholdMin);
+    //finding sudoku grid in image
+    tie(valid, proccessedImage) = findGrid(proccessedImage);
 
-        //finding sudoku grid in image
-        tie(valid, proccessedImage) = findGrid(proccessedImage);
-
-        if(valid == true) {
-            //get cells from grid
-            vector<tuple<Mat, tuple<int, int>>> cells;
-
-            cells = findCells(proccessedImage);
-
-            //get cell values and positions
-            vector<tuple<int, tuple<int, int>>> cellValuesPositions;
-
-            cellValuesPositions = findCellValues(cells);
-            cellValuesPositions = findCellPositions(cellValuesPositions);
-
-            //print sudoku grid for server to read
-            string gridString = "";
-
-            for(int index = 0; index < 81; index++) {
-                gridString = gridString + to_string(get<0>(cellValuesPositions[index]));
-            }
-
-            //make grid tuple to push in grid vector
-            tuple<String, int> gridTuple;
-            int gridOccurance = 1;
-
-            for(int index = 0; index < gridValues.size(); index++) {
-                if(get<0>(gridValues[index]) == gridString) {
-                    gridOccurance = get<1>(gridValues[index]);
-                    gridValues.pop_back();
-                    break;
-                }
-            }
-
-            gridTuple = make_tuple(gridString, gridOccurance);
-
-            gridValues.push_back(gridTuple);
-        }
-    }
-
-    if(gridValues.size() == 0) {
+    if(valid == false) {
         cout << "Grid not found" << endl;
         return -1;
     }
 
-    //occurance record grid index
-    int recordIndex = gridValues.size() - 1;
+    //get cells from grid
+    vector<tuple<Mat, tuple<int, int>>> cells;
 
-    for(int index = gridValues.size() - 2; index >= 0; index--) {
-        if(get<1>(gridValues[index]) > get<1>(gridValues[recordIndex])) {
-            recordIndex = index;
-        }
+    cells = findCells(proccessedImage);
+
+    //get cell values and positions
+    vector<tuple<int, tuple<int, int>>> cellValuesPositions;
+
+    cellValuesPositions = findCellValues(cells);
+    cellValuesPositions = findCellPositions(cellValuesPositions);
+
+    //print sudoku grid for server to read
+    string gridString = "";
+
+    for(int index = 0; index < 81; index++) {
+        gridString = gridString + to_string(get<0>(cellValuesPositions[index]));
     }
 
-    cout << get<0>(gridValues[recordIndex]) << endl;
+    cout << gridString << endl;
 
     return 0;
 }
@@ -378,7 +346,7 @@ tuple<bool, Mat> findGrid(Mat image) {
     return make_tuple(false, image);
 }
 
-Mat imagePreproccessing(Mat image, int thresholdMin) {
+Mat imagePreproccessing(Mat image) {
     //calculating image ratio
     double ratio = (double)image.size[0] / (double)image.size[1];
 
@@ -390,9 +358,6 @@ Mat imagePreproccessing(Mat image, int thresholdMin) {
 
     //grayscaling image
     cvtColor(image, image, COLOR_BGR2GRAY);
-
-    //converting image to black-white
-    threshold(image, image, thresholdMin, 255, THRESH_BINARY);
 
     //adaptive threshold
     adaptiveThreshold(image, image, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY, 11, 2);
